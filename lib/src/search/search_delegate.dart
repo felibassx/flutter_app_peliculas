@@ -72,7 +72,7 @@ final peliculasRecientes = [
     }
 
     return FutureBuilder(
-      
+
       future: peliculasProviders.buscarPelicula(query),
       builder: (BuildContext context, AsyncSnapshot<List<Pelicula>> snapshot) {
 
@@ -90,6 +90,11 @@ final peliculasRecientes = [
                 ),
                 title: Text(pelicula.title),
                 subtitle: Text(pelicula.originalTitle),
+                onTap: (){
+                  close(context, null);
+                  pelicula.uniqueId = '';
+                  Navigator.pushNamed(context, 'detalle', arguments: pelicula);
+                },
               );
             }).toList(),
           );

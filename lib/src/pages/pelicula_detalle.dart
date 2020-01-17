@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:peliculas/src/models/actores_model.dart';
 import 'package:peliculas/src/models/peliculas_model.dart';
+import 'package:peliculas/src/models/videos_model.dart';
 import 'package:peliculas/src/providers/peliculas.provider.dart';
+import 'package:peliculas/src/widgets/youtube_player.dart';
 
 class PeliculaDetalle extends StatelessWidget {
+  final peliculasProvider = new PeliculasProvider();
+
   @override
   Widget build(BuildContext context) {
     final Pelicula pelicula = ModalRoute.of(context).settings.arguments;
@@ -17,7 +21,11 @@ class PeliculaDetalle extends StatelessWidget {
               SizedBox(height: 10.0),
               _posterTitulo(context, pelicula),
               _descripcion(context, pelicula),
-              _crearCasting(context, pelicula)
+              SizedBox(height: 40.0),
+              _crearCasting(context, pelicula),
+              _createTrailer(context, pelicula.id.toString())
+
+              // _crearTrailers(context, pelicula.id.toString())
             ]),
           )
         ],
@@ -41,7 +49,7 @@ class PeliculaDetalle extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(pelicula.title,
-            style: TextStyle(color: Colors.white, fontSize: 18.0),
+            style: TextStyle(color: Colors.white, fontSize: 16.0),
             overflow: TextOverflow.ellipsis),
       ),
     );
@@ -100,10 +108,21 @@ class PeliculaDetalle extends StatelessWidget {
 
   Widget _descripcion(BuildContext context, Pelicula pelicula) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-      child: Text(
-        pelicula.overview,
-        textAlign: TextAlign.justify,
+      
+      padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 30.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('Sinopsis', style: TextStyle(fontSize: 16, ), textAlign: TextAlign.start,),
+          SizedBox(
+            height: 10.0,
+          ),
+          Text(
+            pelicula.overview,
+            textAlign: TextAlign.justify,
+          ),
+          
+        ],
       ),
     );
   }
@@ -156,5 +175,37 @@ class PeliculaDetalle extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _createTrailer(BuildContext context, String idPelicula) {
+    return FutureBuilder(
+      future: peliculasProvider.getTrailer(idPelicula),
+      builder: (context, AsyncSnapshot<List<Trailer>> snapshot) {
+        if (snapshot.hasData) {
+          return _trajetaTrailer(snapshot.data);
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _trajetaTrailer(List<Trailer> trailerList) {
+    return SizedBox(
+        height: 150.0,
+        width: double.infinity,
+        child: PageView.builder(
+          pageSnapping: false,
+          controller: PageController(viewportFraction: 0.3, initialPage: 1),
+          itemCount: trailerList.length,
+          itemBuilder: (context, i) {
+            return YoutubePlayerWidget(
+              idVideo: trailerList[i].key,
+              nameTrailer: 'Ver trailer', // trailerList[i].name,
+            );
+          },
+        ));
   }
 }

@@ -15,10 +15,11 @@ class HomePage extends StatelessWidget {
     peliculasProvider.getPopulares();
 
     return Scaffold(
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         centerTitle: false,
-        title: Text('Películas en Cine'),
-        backgroundColor: Colors.indigoAccent,
+        title: Text('Peliculas en estreno', style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.black87,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
@@ -32,6 +33,7 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: Container(
+        
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[_swiperTarjetas(), _footer(context)],
@@ -66,9 +68,9 @@ class HomePage extends StatelessWidget {
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(left: 20.0),
-            child: Text('Populares', style: Theme.of(context).textTheme.subhead)
+            child: Text('Populares', style: TextStyle(color: Colors.white, fontSize: 18.0))
             ),
-          SizedBox(height: 5.0),
+          SizedBox(height: 9.0),
 
           StreamBuilder(
             stream: peliculasProvider.popularesStream,

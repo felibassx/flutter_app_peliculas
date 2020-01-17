@@ -4,11 +4,12 @@ import 'dart:convert';
 import 'package:peliculas/src/models/actores_model.dart';
 import 'package:peliculas/src/models/peliculas_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:peliculas/src/models/videos_model.dart';
 
 class PeliculasProvider {
   String _apiKey = 'f325141b6c6c6ab81333cbef19dec5a7';
   String _url = 'api.themoviedb.org';
-  String _languaje = 'es-ES';
+  String _languaje = 'es-CL';
   int _popularesPage = 0;
   bool _cargando = false;
 
@@ -20,6 +21,7 @@ class PeliculasProvider {
 
   Function(List<Pelicula>) get popularesSink =>
       _popularesStreamController.sink.add;
+
   Stream<List<Pelicula>> get popularesStream =>
       _popularesStreamController.stream;
 
@@ -86,6 +88,19 @@ class PeliculasProvider {
         {'api_key': _apiKey, 'language': _languaje, 'query': query});
 
     return await _procesarRespuesta(url);
+  }
+
+  Future<List<Trailer>> getTrailer( String peliculaId ) async {
+    final url = Uri.https(_url, '3/movie/$peliculaId/videos',
+        {'api_key': _apiKey, 'language': _languaje});
+
+    final resp = await http.get(url);
+
+    final decodedData = json.decode(resp.body);
+
+    final Trailers trailer = new Trailers.fromJsonList(decodedData['results']);
+
+    return trailer.trailers;
   }
 
 
